@@ -13,23 +13,18 @@ export class AuthenticationMiddleware implements NestMiddleware {
       "/user/login",
       "/user/auth",
       "/user/create",
-      "/create"
+      "/create",
+      "/"
     ]
 
     const authHeader = request.headers['authorization'];
 
     if (!authHeader) {
-      let access = false
 
-      noAuthRoutes.map((path) => {
+      const access = noAuthRoutes.some(path => request.baseUrl == path)
+      const isRandomUrlPath = /^\/[a-zA-Z0-9]{6}$/.test(request.baseUrl);
 
-        if (request.baseUrl === path) {
-          access = true
-        }
-
-      })
-
-      if (!access) {
+      if (!access && !isRandomUrlPath) {
         throw new UnauthorizedException('No authorization header provided')
       }
 

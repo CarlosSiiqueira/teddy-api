@@ -15,11 +15,15 @@ import { CreateUrlDto, UpdateUrlDto } from "./url.dto";
 import { UrlService } from "./url.service";
 import { TidyUrl } from '@prisma/client'
 import { Request } from 'express'
+import { UrlAccessService } from "src/url access/url.access.service";
 
 @Controller('/')
 export class UrlController {
 
-  constructor(private readonly urlService: UrlService) { }
+  constructor(
+    private readonly urlService: UrlService,
+    private readonly urlAccessService: UrlAccessService
+  ) { }
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
@@ -41,13 +45,20 @@ export class UrlController {
   }
 
   @Get(':url')
-  async find(@Param('url') tidy_url: string): Promise<string> {
+  async find(@Param('url') tidy_url: string, @Req() request: Request): Promise<string> {
 
     let newUrl = `http://localhost:${process.env.PORT}/${tidy_url}`
     const url = await this.urlService.find(newUrl)
 
-
     if (url) {
+
+      let user
+
+      if (request.headers?.user) {
+        user = JSON.parse(request.headers.user as string);
+      }
+
+      await this.urlAccessService.create({ tidyUrlId: url.id, userid: user?.id || null })
       return 'Acesso registrado'
     }
 
