@@ -1,13 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
-import { CreateUserDto, UpdateUserDto } from "./user.dto";
+import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import crypto from 'crypto'
 import { Users } from "@prisma/client";
+import jwt from 'jsonwebtoken'
 
 @Injectable()
 export class UserService {
 
-  constructor(private readonly prisma: PrismaService) { }
+
+  private readonly secretKey: string
+
+  constructor(
+    private readonly prisma: PrismaService,
+
+  ) {
+    this.secretKey = process.env.JWT_SECRET_KEY || ''
+  }
 
   async create(data: CreateUserDto): Promise<string> {
 
@@ -74,6 +83,48 @@ export class UserService {
         deleted_at: new Date()
       }
     })
+  }
+
+  async login(data: LoginUserDto): Promise<Users> {
+
+    return await this.prisma.users.findFirst({
+      where: {
+        ...data
+      }
+    })
+
+  }
+
+  async authenticate(username: string, password: string): Promise<{
+    userId: string,
+    token: string
+  } | null> {
+
+    const user = await this.login({ username, password })
+
+    const token = jwt.sign({ id: user.id, username: user.username }, this.secretKey, { expiresIn: '1d' });
+
+    return {
+      userId: user.id,
+      token
+    }
+  }
+
+  async verifyToken(token: string): Promise<{ id: string, user: Users } | null> {
+
+    try {
+      const payload = jwt.verify(token, this.secretKey) as { id: string };
+      const user = await this.find(payload.id)
+
+      if (user) {
+        return { id: payload.id, user: user };
+      }
+
+      return null
+
+    } catch (error) {
+      return null;
+    }
   }
 
 }
