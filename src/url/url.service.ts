@@ -26,7 +26,7 @@ export class UrlService {
         }
       })
 
-      return id
+      return tidy_url
     } catch (error) {
 
     }
