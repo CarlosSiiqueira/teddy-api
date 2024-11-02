@@ -16,7 +16,9 @@ import { UrlService } from "./url.service";
 import { TidyUrl } from '@prisma/client'
 import { Request } from 'express'
 import { UrlAccessService } from "src/url access/url.access.service";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('urls')
 @Controller('/')
 export class UrlController {
 

@@ -10,9 +10,9 @@ export class AuthenticationMiddleware implements NestMiddleware {
   async use(request: Request, response: Response, next: NextFunction) {
 
     const noAuthRoutes = [
-      "/user/login",
-      "/user/auth",
-      "/user/create",
+      "/users/login",
+      "/users/auth",
+      "/users/create",
       "/create",
       "/"
     ]

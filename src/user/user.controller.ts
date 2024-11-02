@@ -13,13 +13,17 @@ import {
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { Users } from '@prisma/client'
+import { ApiResponse, ApiTags } from "@nestjs/swagger";
 
+@ApiTags('users')
 @Controller('users')
 export class UserController {
 
   constructor(private readonly userService: UserService) { }
 
-  @Post('create')
+  @ApiResponse({ status: 201, description: 'User created.' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post('')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUserDto): Promise<string> {
     return await this.userService.create(createUserDto)
