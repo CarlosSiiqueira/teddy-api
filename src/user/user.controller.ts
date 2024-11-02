@@ -10,7 +10,7 @@ import {
   Post,
   Put
 } from "@nestjs/common";
-import { CreateUserDto, UpdateUserDto } from "./user.dto";
+import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { Users } from '@prisma/client'
 
@@ -51,6 +51,11 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
     await this.userService.delete(id)
+  }
+
+  @Post('auth')
+  async auth(@Body() data: LoginUserDto): Promise<{ token: string } | null> {
+    return await this.userService.authenticate(data.username, data.password)
   }
 
 }

@@ -14,18 +14,18 @@ import { CreateUrlDto, UpdateUrlDto } from "./url.dto";
 import { UrlService } from "./url.service";
 import { TidyUrl } from '@prisma/client'
 
-@Controller('url')
+@Controller('/')
 export class UrlController {
 
   constructor(private readonly urlService: UrlService) { }
 
-  @Post()
+  @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUrlDto): Promise<string> {
     return await this.urlService.create(createUserDto)
   }
 
-  @Get()
+  @Get('url/findAll')
   async findAll(): Promise<TidyUrl[]> {
     return await this.urlService.findAll()
   }
@@ -35,7 +35,7 @@ export class UrlController {
     return await this.urlService.find(id)
   }
 
-  @Put(':id')
+  @Put('url/update/:id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUrlDto): Promise<TidyUrl> {
 
     const url = await this.urlService.update(id, updateUserDto)
@@ -47,10 +47,10 @@ export class UrlController {
     return url
   }
 
-  @Delete(':id')
+  @Delete('url/delete/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
     await this.urlService.delete(id)
   }
-
+  
 }

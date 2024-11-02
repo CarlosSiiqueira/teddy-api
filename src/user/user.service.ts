@@ -3,7 +3,7 @@ import { PrismaService } from "prisma/prisma.service";
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import * as crypto from 'crypto'
 import { Users } from "@prisma/client";
-import jwt from 'jsonwebtoken'
+import * as jwt from 'jsonwebtoken'
 
 @Injectable()
 export class UserService {
@@ -95,17 +95,13 @@ export class UserService {
 
   }
 
-  async authenticate(username: string, password: string): Promise<{
-    userId: string,
-    token: string
-  } | null> {
+  async authenticate(username: string, password: string): Promise<{ token: string } | null> {
 
     const user = await this.login({ username, password })
 
     const token = jwt.sign({ id: user.id, username: user.username }, this.secretKey, { expiresIn: '1d' });
 
     return {
-      userId: user.id,
       token
     }
   }
