@@ -15,15 +15,11 @@ export class UpdateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  username: string;
+  username?: string;
 
   @IsString()
   @IsNotEmpty()
-  password: string;
-
-  @IsNotEmpty()
-  @IsDate()
-  update_at: Date;
+  password?: string;
 }
 
 export class LoginUserDto {

@@ -14,7 +14,7 @@ import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { Users } from '@prisma/client'
 
-@Controller('user')
+@Controller('users')
 export class UserController {
 
   constructor(private readonly userService: UserService) { }

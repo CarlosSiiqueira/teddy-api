@@ -39,7 +39,7 @@ export class UrlController {
     return await this.urlService.create(createUserDto)
   }
 
-  @Get('url/findAll')
+  @Get('urls')
   async findAll(): Promise<TidyUrl[]> {
     return await this.urlService.findAll()
   }
@@ -65,7 +65,7 @@ export class UrlController {
     return 'url não encontrada'
   }
 
-  @Put('url/update/:id')
+  @Put('urls/update/:id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUrlDto): Promise<TidyUrl> {
 
     const url = await this.urlService.update(id, updateUserDto)
@@ -77,7 +77,7 @@ export class UrlController {
     return url
   }
 
-  @Delete('url/delete/:id')
+  @Delete('urls/delete/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
     await this.urlService.delete(id)

@@ -73,15 +73,17 @@ export class UrlService {
 
     try {
 
-      const tidy_url = 'as'
+      const tidy_url = `http://localhost:${process.env.PORT}/${generateShortCode()}`;
 
       const url = await this.prismaService.tidyUrl.update({
         where: {
-          id
+          id,
+          deleted_at: null
         },
         data: {
           ...data,
-          tidy_url
+          tidy_url,
+          updated_at: new Date()
         }
       })
 

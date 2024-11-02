@@ -41,7 +41,8 @@ export class UserService {
 
     const user = await this.prisma.users.findUnique({
       where: {
-        id
+        id,
+        deleted_at: null
       }
     })
 
@@ -63,10 +64,12 @@ export class UserService {
 
     const user = await this.prisma.users.update({
       data: {
-        ...data
+        ...data,
+        updated_at: new Date()
       },
       where: {
-        id
+        id,
+        deleted_at: null
       }
     })
 
