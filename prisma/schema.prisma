@@ -9,13 +9,14 @@ datasource db {
 }
 
 model Users {
-    id         String    @id @default(uuid())
-    username   String    @unique
+    id         String      @id @default(uuid())
+    username   String      @unique
     password   String
-    created_at DateTime  @default(now())
+    created_at DateTime    @default(now())
     updated_at DateTime?
     deleted_at DateTime?
     TidyUrl    TidyUrl[]
+    UrlAccess  UrlAccess[]
 }
 
 model TidyUrl {
@@ -32,9 +33,10 @@ model TidyUrl {
 
 model UrlAccess {
     id          String   @id @default(uuid())
-    accesses    Int
     last_access DateTime @default(now())
 
     TidyUrl   TidyUrl @relation(fields: [tidyUrlId], references: [id])
     tidyUrlId String
+    User      Users?  @relation(fields: [userid], references: [id])
+    userid    String?
 }

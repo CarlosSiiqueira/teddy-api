@@ -3,6 +3,7 @@ import { PrismaService } from "prisma/prisma.service";
 import { CreateUrlDto, UpdateUrlDto } from "./url.dto";
 import * as crypto from 'crypto'
 import { TidyUrl } from "@prisma/client";
+import { generateShortCode } from "src/shared/utils/string";
 
 
 @Injectable()
@@ -15,7 +16,7 @@ export class UrlService {
     try {
 
       const id = crypto.randomUUID()
-      const tidy_url = 'aaaa';
+      const tidy_url = `http://localhost:${process.env.PORT}/${generateShortCode()}`;
 
       await this.prismaService.tidyUrl.create({
         data: {
@@ -31,11 +32,11 @@ export class UrlService {
     }
   }
 
-  async find(id: string): Promise<TidyUrl> {
+  async find(tidy_url: string): Promise<TidyUrl | null> {
 
-    return await this.prismaService.tidyUrl.findUnique({
+    return await this.prismaService.tidyUrl.findFirst({
       where: {
-        id
+        tidy_url
       },
       include: {
         UrlAccess: true
@@ -46,15 +47,26 @@ export class UrlService {
 
   async findAll(): Promise<TidyUrl[]> {
 
-    return await this.prismaService.tidyUrl.findMany({
+    const urls = await this.prismaService.tidyUrl.findMany({
       where: {
         deleted_at: null
-      },
-      include: {
-        UrlAccess: true
       }
     })
 
+    const rows = await Promise.all(
+      urls.map(async (url) => {
+
+        let _count = await this.prismaService.urlAccess.count({ where: { tidyUrlId: url.id } })
+
+        Object.assign(url, {
+          acessos: _count
+        })
+
+        return url
+      })
+    )
+
+    return rows;
   }
 
   async update(id: string, data: UpdateUrlDto): Promise<TidyUrl> {

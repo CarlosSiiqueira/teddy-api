@@ -12,7 +12,8 @@ export class AuthenticationMiddleware implements NestMiddleware {
     const noAuthRoutes = [
       "/user/login",
       "/user/auth",
-      "/user/create"
+      "/user/create",
+      "/create"
     ]
 
     const authHeader = request.headers['authorization'];

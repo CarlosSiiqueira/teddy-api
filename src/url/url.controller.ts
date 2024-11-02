@@ -8,11 +8,13 @@ import {
   NotFoundException,
   Param,
   Post,
-  Put
+  Put,
+  Req
 } from "@nestjs/common";
 import { CreateUrlDto, UpdateUrlDto } from "./url.dto";
 import { UrlService } from "./url.service";
 import { TidyUrl } from '@prisma/client'
+import { Request } from 'express'
 
 @Controller('/')
 export class UrlController {
@@ -21,7 +23,15 @@ export class UrlController {
 
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createUserDto: CreateUrlDto): Promise<string> {
+  async create(@Body() createUserDto: CreateUrlDto, @Req() request: Request): Promise<string> {
+
+    let user
+
+    if (request.headers?.user) {
+      user = JSON.parse(request.headers.user as string);
+      createUserDto.userId = user.id
+    }
+
     return await this.urlService.create(createUserDto)
   }
 
@@ -30,9 +40,18 @@ export class UrlController {
     return await this.urlService.findAll()
   }
 
-  @Get(':id')
-  async find(@Param('id') id: string): Promise<TidyUrl> {
-    return await this.urlService.find(id)
+  @Get(':url')
+  async find(@Param('url') tidy_url: string): Promise<string> {
+
+    let newUrl = `http://localhost:${process.env.PORT}/${tidy_url}`
+    const url = await this.urlService.find(newUrl)
+
+
+    if (url) {
+      return 'Acesso registrado'
+    }
+
+    return 'url não encontrada'
   }
 
   @Put('url/update/:id')
@@ -52,5 +71,5 @@ export class UrlController {
   async delete(@Param('id') id: string): Promise<void> {
     await this.urlService.delete(id)
   }
-  
+
 }
