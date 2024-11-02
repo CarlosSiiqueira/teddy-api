@@ -11,7 +11,8 @@ export class AuthenticationMiddleware implements NestMiddleware {
 
     const noAuthRoutes = [
       "/user/login",
-      "/user/auth"
+      "/user/auth",
+      "/user/create"
     ]
 
     const authHeader = request.headers['authorization'];
@@ -21,7 +22,7 @@ export class AuthenticationMiddleware implements NestMiddleware {
 
       noAuthRoutes.map((path) => {
 
-        if (request.path === path) {
+        if (request.baseUrl === path) {
           access = true
         }
 

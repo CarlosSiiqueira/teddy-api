@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
-import crypto from 'crypto'
+import * as crypto from 'crypto'
 import { Users } from "@prisma/client";
 import jwt from 'jsonwebtoken'
 
@@ -33,7 +33,7 @@ export class UserService {
 
       return id
     } catch (error) {
-
+      console.log(error)
     }
   }
 
