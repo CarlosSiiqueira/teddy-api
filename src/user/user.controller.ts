@@ -8,7 +8,8 @@ import {
   NotFoundException,
   Param,
   Post,
-  Put
+  Put,
+  UseGuards
 } from "@nestjs/common";
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
@@ -22,7 +23,7 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @ApiProperty({ description: 'Register user' })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiResponse({ status: 201, description: 'User created.' })
   @Post('/create')
   @HttpCode(HttpStatus.CREATED)
@@ -35,7 +36,7 @@ export class UserController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'List users' })
   @ApiResponse({ status: 200 })
   @Get()
@@ -48,7 +49,7 @@ export class UserController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'List target user' })
   @ApiResponse({ status: 200 })
   @Get(':id')
@@ -61,7 +62,7 @@ export class UserController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'Update user' })
   @ApiResponse({ status: 200 })
   @Put(':id')
@@ -81,7 +82,7 @@ export class UserController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'Remove user' })
   @ApiResponse({ status: 204 })
   @Delete(':id')

@@ -29,9 +29,10 @@ export class UrlController {
 
   @ApiHeader({
     name: 'Authorization',
+    required: false,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'Generate reduced URL' })
   @ApiResponse({ status: 201, description: 'Url Created' })
   @Post('create')
@@ -52,7 +53,7 @@ export class UrlController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'List reduceds URLs' })
   @ApiResponse({ status: 200 })
   @Get('urls')
@@ -66,7 +67,7 @@ export class UrlController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'Find target reduced URL' })
   @ApiResponse({ status: 200 })
   @Get(':url')
@@ -95,7 +96,7 @@ export class UrlController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'Update reduced URL' })
   @Put('urls/:id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUrlDto): Promise<TidyUrl> {
@@ -114,7 +115,7 @@ export class UrlController {
     required: true,
     description: 'Bearer token for authorization',
   })
-  @ApiBearerAuth('access-token')
+  @ApiBearerAuth()
   @ApiProperty({ description: 'Remove reduced URL' })
   @Delete('urls/:id')
   @HttpCode(HttpStatus.NO_CONTENT)

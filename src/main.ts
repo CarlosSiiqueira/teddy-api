@@ -11,18 +11,7 @@ async function bootstrap() {
     .setTitle('Teddy API')
     .setDescription('Api to reduce url')
     .setVersion('1.0')
-    .addBearerAuth(
-      {
-        description: `Please enter token in following format: Bearer <JWT>`,
-        name: 'Authorization',
-        bearerFormat: 'Bearer',
-        scheme: 'bearer',
-        type: 'http',
-        in: 'Header'
-      },
-      'access-token'
-    )
-    .addSecurityRequirements('access-token')
+    .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
@@ -30,8 +19,11 @@ async function bootstrap() {
 
   app.enableCors({
     allowedHeaders: ['Authorization', 'Content-Type'],
+    origin: `*`,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
   });
-  
+
 
   await app.listen(PORT, () => {
     console.log(`Servidor rodando na url:http://localhost:${PORT}`)
