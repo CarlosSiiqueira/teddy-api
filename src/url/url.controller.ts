@@ -16,7 +16,7 @@ import { UrlService } from "./url.service";
 import { TidyUrl } from '@prisma/client'
 import { Request } from 'express'
 import { UrlAccessService } from "src/url access/url.access.service";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags('urls')
 @Controller('/')
@@ -27,6 +27,8 @@ export class UrlController {
     private readonly urlAccessService: UrlAccessService
   ) { }
 
+  @ApiProperty({ description: 'Generate reduced URL' })
+  @ApiResponse({ status: 201, description: 'Url Created' })
   @Post('create')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUrlDto, @Req() request: Request): Promise<string> {
@@ -41,11 +43,15 @@ export class UrlController {
     return await this.urlService.create(createUserDto)
   }
 
+  @ApiProperty({ description: 'List reduceds URLs' })
+  @ApiResponse({ status: 200 })
   @Get('urls')
   async findAll(): Promise<TidyUrl[]> {
     return await this.urlService.findAll()
   }
 
+  @ApiProperty({ description: 'Find target reduced URL' })
+  @ApiResponse({ status: 200 })
   @Get(':url')
   async find(@Param('url') tidy_url: string, @Req() request: Request): Promise<string> {
 
@@ -67,6 +73,7 @@ export class UrlController {
     return 'url não encontrada'
   }
 
+  @ApiProperty({ description: 'Update reduced URL' })
   @Put('urls/update/:id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUrlDto): Promise<TidyUrl> {
 
@@ -79,6 +86,7 @@ export class UrlController {
     return url
   }
 
+  @ApiProperty({ description: 'Remove reduced URL' })
   @Delete('urls/delete/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
