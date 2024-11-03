@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  teddy-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+       - .:/usr/src
+    restart: on-failure
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run start:dev"
+    environment:
+      PORT: 8000
+      JWT_SECRET_KEY: 99eb92b3b4e6905ed5c03332314cfa629d51d2939f08769e9bd2f86028aa092b
+      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@host.docker.internal/tidyurl?schema=public
