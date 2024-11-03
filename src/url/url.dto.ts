@@ -7,10 +7,7 @@ export class CreateUrlDto {
   @IsString()
   @IsNotEmpty()
   origin_url: string;
-
-  @ApiProperty({ description: 'User id' })
-  @IsString()
-  userId?: string;
+  
 }
 
 export class UpdateUrlDto {

@@ -12,18 +12,20 @@ export class UrlService {
 
   constructor(private readonly prismaService: PrismaService) { }
 
-  async create(data: CreateUrlDto): Promise<string> {
+  async create(data: CreateUrlDto, userId: string): Promise<string> {
 
     try {
 
       const id = crypto.randomUUID()
       const tidy_url = `http://localhost:${process.env.PORT}/${generateShortCode()}`;
+      userId = userId ? userId : null
 
       await this.prismaService.tidyUrl.create({
         data: {
           id,
           ...data,
-          tidy_url
+          tidy_url,
+          userId
         }
       })
 
@@ -54,7 +56,7 @@ export class UrlService {
 
   }
 
-  async findAll(): Promise<TidyUrl[]> {
+  async findAll(user: string): Promise<TidyUrl[]> {
 
     try {
 
@@ -67,7 +69,7 @@ export class UrlService {
       const rows = await Promise.all(
         urls.map(async (url) => {
 
-          let _count = await this.prismaService.urlAccess.count({ where: { tidyUrlId: url.id } })
+          let _count = await this.prismaService.urlAccess.count({ where: { tidyUrlId: url.id, TidyUrl: { userId: user } } })
 
           Object.assign(url, {
             acessos: _count

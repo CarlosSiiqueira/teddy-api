@@ -13,7 +13,7 @@ import {
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
 import { Users } from '@prisma/client'
-import { ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags('users')
 @Controller('users')
@@ -22,13 +22,20 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @ApiProperty({ description: 'Register user' })
+  @ApiBearerAuth('access-token')
   @ApiResponse({ status: 201, description: 'User created.' })
-  @Post('')
+  @Post('/create')
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createUserDto: CreateUserDto): Promise<string> {
     return await this.userService.create(createUserDto)
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'List users' })
   @ApiResponse({ status: 200 })
   @Get()
@@ -36,6 +43,12 @@ export class UserController {
     return await this.userService.findAll()
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'List target user' })
   @ApiResponse({ status: 200 })
   @Get(':id')
@@ -43,6 +56,12 @@ export class UserController {
     return await this.userService.find(id)
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'Update user' })
   @ApiResponse({ status: 200 })
   @Put(':id')
@@ -57,6 +76,12 @@ export class UserController {
     return user
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'Remove user' })
   @ApiResponse({ status: 204 })
   @Delete(':id')
@@ -65,6 +90,8 @@ export class UserController {
     await this.userService.delete(id)
   }
 
+  @ApiProperty({ description: 'Auth token' })
+  @ApiResponse({ status: 204 })
   @Post('auth')
   async auth(@Body() data: LoginUserDto): Promise<{ token: string } | null> {
     return await this.userService.authenticate(data.username, data.password)

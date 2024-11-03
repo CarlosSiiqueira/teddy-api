@@ -16,7 +16,7 @@ import { UrlService } from "./url.service";
 import { TidyUrl } from '@prisma/client'
 import { Request } from 'express'
 import { UrlAccessService } from "src/url access/url.access.service";
-import { ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiHeader, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
 
 @ApiTags('urls')
 @Controller('/')
@@ -27,6 +27,11 @@ export class UrlController {
     private readonly urlAccessService: UrlAccessService
   ) { }
 
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'Generate reduced URL' })
   @ApiResponse({ status: 201, description: 'Url Created' })
   @Post('create')
@@ -37,19 +42,31 @@ export class UrlController {
 
     if (request.headers?.user) {
       user = JSON.parse(request.headers.user as string);
-      createUserDto.userId = user.id
     }
 
-    return await this.urlService.create(createUserDto)
+    return await this.urlService.create(createUserDto, user?.id)
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'List reduceds URLs' })
   @ApiResponse({ status: 200 })
   @Get('urls')
-  async findAll(): Promise<TidyUrl[]> {
-    return await this.urlService.findAll()
+  async findAll(@Req() request: Request): Promise<TidyUrl[]> {
+    let user = JSON.parse(request.headers.user as string);
+    return await this.urlService.findAll(user.id)
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'Find target reduced URL' })
   @ApiResponse({ status: 200 })
   @Get(':url')
@@ -73,8 +90,14 @@ export class UrlController {
     return 'url não encontrada'
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'Update reduced URL' })
-  @Put('urls/update/:id')
+  @Put('urls/:id')
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUrlDto): Promise<TidyUrl> {
 
     const url = await this.urlService.update(id, updateUserDto)
@@ -86,8 +109,14 @@ export class UrlController {
     return url
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    required: true,
+    description: 'Bearer token for authorization',
+  })
+  @ApiBearerAuth('access-token')
   @ApiProperty({ description: 'Remove reduced URL' })
-  @Delete('urls/delete/:id')
+  @Delete('urls/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('id') id: string): Promise<void> {
     await this.urlService.delete(id)
