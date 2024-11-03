@@ -62,14 +62,24 @@ export class UrlService {
 
       const urls = await this.prismaService.tidyUrl.findMany({
         where: {
-          deleted_at: null
+          deleted_at: null,
+          userId: user
         }
       })
 
       const rows = await Promise.all(
         urls.map(async (url) => {
 
-          let _count = await this.prismaService.urlAccess.count({ where: { tidyUrlId: url.id, TidyUrl: { userId: user } } })
+          let _count = await this.prismaService.urlAccess.count(
+            {
+              where: {
+                tidyUrlId: url.id,
+                TidyUrl: {
+                  userId: user,
+                  deleted_at: null
+                }
+              }
+            })
 
           Object.assign(url, {
             acessos: _count
@@ -91,8 +101,6 @@ export class UrlService {
 
     try {
 
-      const tidy_url = `http://localhost:${process.env.PORT}/${generateShortCode()}`;
-
       const url = await this.prismaService.tidyUrl.update({
         where: {
           id,
@@ -100,7 +108,6 @@ export class UrlService {
         },
         data: {
           ...data,
-          tidy_url,
           updated_at: new Date()
         }
       })
@@ -117,9 +124,12 @@ export class UrlService {
 
     try {
 
-      await this.prismaService.tidyUrl.delete({
+      await this.prismaService.tidyUrl.update({
         where: {
           id
+        },
+        data: {
+          deleted_at: new Date()
         }
       })
     } catch (error) {

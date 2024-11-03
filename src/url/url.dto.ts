@@ -17,7 +17,4 @@ export class UpdateUrlDto {
   @IsNotEmpty()
   origin_url: string;
 
-  @ApiProperty({ description: 'User id' })
-  @IsString()
-  userId: string;
 }
