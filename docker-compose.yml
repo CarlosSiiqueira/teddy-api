@@ -14,4 +14,21 @@ services:
     environment:
       PORT: 8000
       JWT_SECRET_KEY: 99eb92b3b4e6905ed5c03332314cfa629d51d2939f08769e9bd2f86028aa092b
-      DATABASE_URL: postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@host.docker.internal/tidyurl?schema=public
+      DATABASE_URL: postgresql://user:password@db:5432/tidyurl?schema=public
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: tidyurl
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    
+volumes:
+  pgdata:
