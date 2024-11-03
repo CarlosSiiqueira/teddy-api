@@ -4,6 +4,7 @@ import { CreateUrlDto, UpdateUrlDto } from "./url.dto";
 import * as crypto from 'crypto'
 import { TidyUrl } from "@prisma/client";
 import { generateShortCode } from "src/shared/utils/string";
+import { Warning } from "src/errors";
 
 
 @Injectable()
@@ -28,45 +29,60 @@ export class UrlService {
 
       return tidy_url
     } catch (error) {
-
+      throw new Warning('Error creating url', 400)
     }
   }
 
   async find(tidy_url: string): Promise<TidyUrl | null> {
 
-    return await this.prismaService.tidyUrl.findFirst({
-      where: {
-        tidy_url
-      },
-      include: {
-        UrlAccess: true
-      }
-    })
+
+    try {
+
+      const url = await this.prismaService.tidyUrl.findFirst({
+        where: {
+          tidy_url
+        },
+        include: {
+          UrlAccess: true
+        }
+      })
+
+      return url
+    } catch (error) {
+      throw new Warning('Error finding url', 400)
+    }
 
   }
 
   async findAll(): Promise<TidyUrl[]> {
 
-    const urls = await this.prismaService.tidyUrl.findMany({
-      where: {
-        deleted_at: null
-      }
-    })
+    try {
 
-    const rows = await Promise.all(
-      urls.map(async (url) => {
-
-        let _count = await this.prismaService.urlAccess.count({ where: { tidyUrlId: url.id } })
-
-        Object.assign(url, {
-          acessos: _count
-        })
-
-        return url
+      const urls = await this.prismaService.tidyUrl.findMany({
+        where: {
+          deleted_at: null
+        }
       })
-    )
 
-    return rows;
+      const rows = await Promise.all(
+        urls.map(async (url) => {
+
+          let _count = await this.prismaService.urlAccess.count({ where: { tidyUrlId: url.id } })
+
+          Object.assign(url, {
+            acessos: _count
+          })
+
+          return url
+        })
+      )
+
+      return rows;
+
+    } catch (error) {
+      throw new Warning('Error listing urls', 400)
+    }
+
   }
 
   async update(id: string, data: UpdateUrlDto): Promise<TidyUrl> {
@@ -90,18 +106,23 @@ export class UrlService {
       return url
 
     } catch (error) {
-
+      throw new Warning('Error updating url', 400)
     }
 
   }
 
   async delete(id: string): Promise<void> {
 
-    await this.prismaService.tidyUrl.delete({
-      where: {
-        id
-      }
-    })
+    try {
+
+      await this.prismaService.tidyUrl.delete({
+        where: {
+          id
+        }
+      })
+    } catch (error) {
+      throw new Warning('Error deleting url', 400)
+    }
 
   }
 

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "prisma/prisma.service";
 import { CreateUrlAccessDto } from "./url.access.dto";
 import * as crypto from 'crypto'
+import { Warning } from "src/errors";
 
 
 @Injectable()
@@ -24,7 +25,7 @@ export class UrlAccessService {
 
       return id
     } catch (error) {
-      console.log(error)
+      throw new Warning('Error generating access', 400)
     }
   }
 

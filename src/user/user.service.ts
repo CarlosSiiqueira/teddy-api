@@ -4,6 +4,7 @@ import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import * as crypto from 'crypto'
 import { Users } from "@prisma/client";
 import * as jwt from 'jsonwebtoken'
+import { Warning } from "src/errors";
 
 @Injectable()
 export class UserService {
@@ -33,79 +34,116 @@ export class UserService {
 
       return id
     } catch (error) {
-      console.log(error)
+      throw new Warning('Error creating user', 400)
     }
   }
 
   async find(id: string): Promise<Users> {
 
-    const user = await this.prisma.users.findUnique({
-      where: {
-        id,
-        deleted_at: null
-      }
-    })
+    try {
 
-    return user
+      const user = await this.prisma.users.findUnique({
+        where: {
+          id,
+          deleted_at: null
+        }
+      })
+
+      return user
+    } catch (error) {
+      throw new Warning('Error finding user', 400)
+    }
   }
 
   async findAll(): Promise<Users[]> {
 
-    return await this.prisma.users.findMany({
-      where: {
-        deleted_at: null
-      }
-    })
+    try {
+
+      const users = await this.prisma.users.findMany({
+        where: {
+          deleted_at: null
+        }
+      })
+
+      return users
+
+    } catch (error) {
+      throw new Warning('Error listing users', 400)
+    }
 
   }
 
   async update(id: string, data: UpdateUserDto): Promise<Users> {
 
+    try {
 
-    const user = await this.prisma.users.update({
-      data: {
-        ...data,
-        updated_at: new Date()
-      },
-      where: {
-        id,
-        deleted_at: null
-      }
-    })
+      const user = await this.prisma.users.update({
+        data: {
+          ...data,
+          updated_at: new Date()
+        },
+        where: {
+          id,
+          deleted_at: null
+        }
+      })
 
-    return user
+      return user
+    } catch (error) {
+      throw new Warning('Error updating user', 400)
+    }
   }
 
   async delete(id: string): Promise<void> {
 
-    await this.prisma.users.update({
-      where: {
-        id
-      },
-      data: {
-        deleted_at: new Date()
-      }
-    })
+    try {
+
+      await this.prisma.users.update({
+        where: {
+          id
+        },
+        data: {
+          deleted_at: new Date()
+        }
+      })
+
+    } catch (error) {
+      throw new Warning('Error deleting  user', 400)
+    }
   }
 
   async login(data: LoginUserDto): Promise<Users> {
 
-    return await this.prisma.users.findFirst({
-      where: {
-        ...data
-      }
-    })
+    try {
+
+      const user = await this.prisma.users.findFirst({
+        where: {
+          ...data
+        }
+      })
+
+      return user
+
+    } catch (error) {
+      throw new Warning('Error on login', 400)
+    }
 
   }
 
   async authenticate(username: string, password: string): Promise<{ token: string } | null> {
 
-    const user = await this.login({ username, password })
+    try {
 
-    const token = jwt.sign({ id: user.id, username: user.username }, this.secretKey, { expiresIn: '1d' });
+      const user = await this.login({ username, password })
 
-    return {
-      token
+      const token = jwt.sign({ id: user.id, username: user.username }, this.secretKey, { expiresIn: '1d' });
+
+      return {
+        token
+      }
+
+    } catch (error) {
+      throw new Warning('Error on authenticate')
     }
   }
 
@@ -122,7 +160,7 @@ export class UserService {
       return null
 
     } catch (error) {
-      return null;
+      throw new Warning('Error verifying token', 400)
     }
   }
 
