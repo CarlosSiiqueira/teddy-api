@@ -7,8 +7,4 @@ export class CreateUrlAccessDto {
   @IsString()
   @IsNotEmpty()
   tidyUrlId: string;
-
-  @ApiProperty({ description: 'User id' })
-  @IsString()
-  userid?: string;
 }

@@ -8,8 +8,7 @@ import {
   NotFoundException,
   Param,
   Post,
-  Put,
-  UseGuards
+  Put
 } from "@nestjs/common";
 import { CreateUserDto, LoginUserDto, UpdateUserDto } from "./user.dto";
 import { UserService } from "./user.service";
@@ -54,7 +53,13 @@ export class UserController {
   @ApiResponse({ status: 200 })
   @Get(':id')
   async find(@Param('id') id: string): Promise<Users> {
-    return await this.userService.find(id)
+    const user = await this.userService.find(id)
+
+    if (!user) {
+      throw new NotFoundException(`User not found`)
+    }
+
+    return user
   }
 
   @ApiHeader({

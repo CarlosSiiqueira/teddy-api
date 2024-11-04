@@ -108,7 +108,7 @@ export class UserService {
       })
 
     } catch (error) {
-      throw new Warning('Error deleting  user', 400)
+      throw new Warning('Error deleting user', 400)
     }
   }
 

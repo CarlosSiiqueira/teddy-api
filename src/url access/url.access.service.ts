@@ -10,7 +10,7 @@ export class UrlAccessService {
 
   constructor(private readonly prismaService: PrismaService) { }
 
-  async create(data: CreateUrlAccessDto): Promise<string> {
+  async create(data: { tidyUrlId: string, userid?: string }): Promise<string> {
 
     try {
 
