@@ -4,7 +4,7 @@ import { PrismaService } from 'prisma/prisma.service'
 import { CreateUrlDto, UpdateUrlDto } from './url.dto'
 import { Warning } from 'src/errors'
 import { TidyUrl } from '@prisma/client'
-import { generateShortCode } from 'src/shared/utils/string'
+import { IUrlResponse } from './url.model'
 
 describe('UrlService', () => {
   let urlService: UrlService
@@ -73,13 +73,22 @@ describe('UrlService', () => {
   describe('find', () => {
     it('should return a TidyUrl object for a valid tidy_url', async () => {
       const tidyUrl = 'http://localhost:3000/short-code'
-      const expectedUrl: TidyUrl = {
+      const expectedUrl: IUrlResponse = {
         id: 'some-id',
         tidy_url: tidyUrl,
         origin_url: 'http://example.com',
-        userId: null,
-        deleted_at: null,
-        updated_at: null
+        updated_at: null,
+        User: {
+          username: 'user-id'
+        },
+        UrlAccess: [
+          {
+            last_access: new Date(),
+            User: {
+              username: 'any user'
+            }
+          }
+        ]
       }
 
       mockPrismaService.tidyUrl.findFirst.mockResolvedValue(expectedUrl)
@@ -88,7 +97,27 @@ describe('UrlService', () => {
       expect(result).toEqual(expectedUrl)
       expect(mockPrismaService.tidyUrl.findFirst).toHaveBeenCalledWith({
         where: { tidy_url: tidyUrl },
-        include: { UrlAccess: true },
+        select: {
+          id: true,
+          origin_url: true,
+          tidy_url: true,
+          updated_at: true,
+          User: {
+            select: {
+              username: true
+            }
+          },
+          UrlAccess: {
+            select: {
+              last_access: true,
+              User: {
+                select: {
+                  username: true
+                }
+              }
+            }
+          }
+        }
       })
     })
 
@@ -113,22 +142,40 @@ describe('UrlService', () => {
   describe('findAll', () => {
     it('should return an array of TidyUrl objects', async () => {
       const userId = 'user-id'
-      const urls: TidyUrl[] = [
+      const urls: IUrlResponse[] = [
         {
           id: 'url1',
           origin_url: 'http://example1.com',
           tidy_url: 'short.url1',
-          userId,
-          deleted_at: null,
-          updated_at: null
+          updated_at: null,
+          User: {
+            username: userId
+          },
+          UrlAccess: [
+            {
+              last_access: new Date(),
+              User: {
+                username: 'any user'
+              }
+            }
+          ]
         },
         {
           id: 'url2',
           origin_url: 'http://example2.com',
           tidy_url: 'short.url2',
-          userId,
-          deleted_at: null,
-          updated_at: null
+          updated_at: null,
+          User: {
+            username: userId
+          },
+          UrlAccess: [
+            {
+              last_access: new Date(),
+              User: {
+                username: 'any user'
+              }
+            }
+          ]
         }
       ]
 
@@ -145,6 +192,27 @@ describe('UrlService', () => {
           deleted_at: null,
           userId,
         },
+        select: {
+          id: true,
+          origin_url: true,
+          tidy_url: true,
+          updated_at: true,
+          User: {
+            select: {
+              username: true
+            }
+          },
+          UrlAccess: {
+            select: {
+              last_access: true,
+              User: {
+                select: {
+                  username: true
+                }
+              }
+            }
+          }
+        }
       })
     })
 

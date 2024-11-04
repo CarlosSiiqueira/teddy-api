@@ -17,6 +17,7 @@ import { TidyUrl } from '@prisma/client'
 import { Request } from 'express'
 import { UrlAccessService } from "src/url access/url.access.service";
 import { ApiBearerAuth, ApiHeader, ApiProperty, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { IUrlResponse } from "./url.model";
 
 @ApiTags('urls')
 @Controller('/')
@@ -57,7 +58,7 @@ export class UrlController {
   @ApiProperty({ description: 'List reduceds URLs' })
   @ApiResponse({ status: 200 })
   @Get('urls')
-  async findAll(@Req() request: Request): Promise<TidyUrl[]> {
+  async findAll(@Req() request: Request): Promise<IUrlResponse[]> {
     let user = JSON.parse(request.headers.user as string);
     return await this.urlService.findAll(user.id)
   }

@@ -5,6 +5,7 @@ import * as crypto from 'crypto'
 import { TidyUrl } from "@prisma/client";
 import { generateShortCode } from "src/shared/utils/string";
 import { Warning } from "src/errors";
+import { IUrlResponse } from "./url.model";
 
 
 @Injectable()
@@ -35,7 +36,7 @@ export class UrlService {
     }
   }
 
-  async find(tidy_url: string): Promise<TidyUrl | null> {
+  async find(tidy_url: string): Promise<IUrlResponse | null> {
 
 
     try {
@@ -44,8 +45,26 @@ export class UrlService {
         where: {
           tidy_url
         },
-        include: {
-          UrlAccess: true
+        select: {
+          id: true,
+          origin_url: true,
+          tidy_url: true,
+          updated_at: true,
+          User: {
+            select: {
+              username: true
+            }
+          },
+          UrlAccess: {
+            select: {
+              last_access: true,
+              User: {
+                select: {
+                  username: true
+                }
+              }
+            }
+          }
         }
       })
 
@@ -56,7 +75,7 @@ export class UrlService {
 
   }
 
-  async findAll(user: string): Promise<TidyUrl[]> {
+  async findAll(user: string): Promise<IUrlResponse[]> {
 
     try {
 
@@ -64,6 +83,27 @@ export class UrlService {
         where: {
           deleted_at: null,
           userId: user
+        },
+        select: {
+          id: true,
+          origin_url: true,
+          tidy_url: true,
+          updated_at: true,
+          User: {
+            select: {
+              username: true
+            }
+          },
+          UrlAccess: {
+            select: {
+              last_access: true,
+              User: {
+                select: {
+                  username: true
+                }
+              }
+            }
+          }
         }
       })
 
