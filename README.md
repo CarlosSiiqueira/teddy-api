@@ -32,7 +32,7 @@ JWT_SECRET_KEY='99eb92b3b4e6905ed5c03332314cfa629d51d2939f08769e9bd2f86028aa092b
 1. **Clone the repository:**
 
    ```bash
-   git clone <your-repo-url>
+   git clone https://github.com/CarlosSiiqueira/teddy-api
    cd <your-project-directory>
    ```
 
