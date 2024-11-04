@@ -11,7 +11,7 @@ Algumas instruções para rodar essa API utilizando o Docker
 ## Requisitos
 
 - Docker
-- Docker Compose
+- Docker Compose (utilize: "docker-compose up --build" para rodar o container)
 
 ## Variáveis de ambiente (.env)
 
